@@ -8,7 +8,6 @@ import inventario.DepartamentoBD;
 import inventario.ObtenerParametros;
 import inventario.Productos;
 import inventario.ProductosBD;
-import inventario.ProveedoresBD;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Connection;
@@ -20,9 +19,7 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import ventanas.AgregarDatos;
 import ventanas.AlmacenJframe;
-import ventanas.ajustes;
 import ventanas.ventasPanel;
 
 /**
@@ -37,30 +34,16 @@ public class BuscadorProductos extends javax.swing.JFrame {
     
     Connection conexion;
     ventasPanel ventana;
-    boolean gananciaUltimo;
-    boolean ivaUltimo;
-    double gananciaDefecto = 0;
-    double ivaDefecto = 0;
-    double precioFinalUltimo;
     String codigo;
-    DefaultTableModel modeloAgregar;
     DefaultTableModel modeloProductos;
-    AgregarDatos agregadorDatos;
-    ajustes ajustess;
-    ObtenerParametros parametros;
     DepartamentoBD departamentosBD;
-    ProveedoresBD proveedorBD;
     public BuscadorProductos(Connection con, ObtenerParametros parametros, ventasPanel ventanaVentas) {
         conexion = con;
         ventana = ventanaVentas;
-        String codigo = null;
-        this.parametros = parametros;
         departamentosBD = new DepartamentoBD(con);
-        proveedorBD = new ProveedoresBD(con);
         initComponents();
         modeloProductos = (DefaultTableModel) TablaProductos.getModel();
         cargarDepartamentos(comboBuscarDepartamentos);
-        agregadorDatos= new AgregarDatos();
         cargarProductos();
         
     }
@@ -99,7 +82,7 @@ public class BuscadorProductos extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Long.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false
@@ -213,7 +196,6 @@ public class BuscadorProductos extends javax.swing.JFrame {
 
         if (evt.getClickCount() == 2){
             JTable tabla = (JTable)evt.getComponent();
-            System.out.println(tabla.getValueAt(tabla.getSelectedRow(), 0));
             codigo = String.valueOf(tabla.getValueAt(tabla.getSelectedRow(), 0));
             try {
                 ventana.cargarProducto(codigo);
@@ -226,11 +208,11 @@ public class BuscadorProductos extends javax.swing.JFrame {
 
     private void comboBuscarDepartamentosItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboBuscarDepartamentosItemStateChanged
         DepartamentoBD departamento= new DepartamentoBD(conexion);
-        int codigo;
+        int codigoDepartamento;
         try {
-            codigo = departamento.codigoDepartamento(comboBuscarDepartamentos.getSelectedItem().toString());
-            System.out.println(codigo);
-            cargarProductosDepartamentos(codigo);
+            codigoDepartamento = departamento.codigoDepartamento(comboBuscarDepartamentos.getSelectedItem().toString());
+            System.out.println(codigoDepartamento);
+            cargarProductosDepartamentos(codigoDepartamento);
             
             dispose();
         } catch (SQLException ex) {
@@ -242,15 +224,15 @@ public class BuscadorProductos extends javax.swing.JFrame {
     private void comboBuscarDepartamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBuscarDepartamentosActionPerformed
 
         DepartamentoBD departamento= new DepartamentoBD(conexion);
-        int codigo;
+        int codigoDepartamento;
         String nombre = (String)comboBuscarDepartamentos.getSelectedItem();
         if (nombre.equals("Sin filtro")){
             cargarProductos();
         }
         else{
             try {
-                codigo = departamento.codigoDepartamento(nombre);
-                cargarProductosDepartamentos(codigo);
+                codigoDepartamento = departamento.codigoDepartamento(nombre);
+                cargarProductosDepartamentos(codigoDepartamento);
             } catch (SQLException ex) {
                 System.out.println(ex.getMessage());
             }
@@ -327,7 +309,8 @@ public class BuscadorProductos extends javax.swing.JFrame {
         });
     }
     
-        private void cargarProductos(){
+    //Carga los productos en la tabla
+    private void cargarProductos(){
         ProductosBD productos;
         ResultSet set;
         productos = new ProductosBD(conexion);
@@ -343,7 +326,7 @@ public class BuscadorProductos extends javax.swing.JFrame {
 
                 //precio = precioCosto + precioCosto*ganancia/100 + (precioCosto+precioCosto*ganancia/100)*(iva/100);
                 precio = (precioCosto*(1+ganancia/100))*(1+iva/100);
-                modeloProductos.addRow(new Object[]{set.getLong(1), set.getString(2),
+                modeloProductos.addRow(new Object[]{set.getString(1), set.getString(2),
                 set.getInt(3), redondear(precio)});
             }
         }
@@ -400,8 +383,8 @@ public class BuscadorProductos extends javax.swing.JFrame {
                 set.getInt(3), precio});
             }
         }
-        catch(Exception e){
-            System.out.println(e.getMessage());
+        catch(SQLException e){
+            System.err.println("Error en BuscadorProductos cargarProductosDepartamentos "+e.getMessage());
         }
     }
 

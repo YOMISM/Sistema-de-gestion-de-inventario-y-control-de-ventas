@@ -8,7 +8,7 @@ import com.github.anastaciocintra.escpos.EscPos;
 import com.github.anastaciocintra.escpos.Style;
 import com.github.anastaciocintra.output.PrinterOutputStream;
 import inventario.Clientes;
-import inventario.ClientesBD;
+import inventario.ClienteBD;
 import inventario.ObtenerParametros;
 import inventario.Ventas;
 import inventario.VentasBD;
@@ -151,7 +151,7 @@ public class Ticket {
     
     private Clientes cargarCliente(int numeroFactura, Connection conexion){
         Clientes cliente = new Clientes();
-        ClientesBD clienteBD = new ClientesBD(conexion);
+        ClienteBD clienteBD = new ClienteBD(conexion);
         VentasBD ventaBD = new VentasBD(conexion);
         Ventas venta = new Ventas();
         venta = ventaBD.getVenta(numeroFactura);

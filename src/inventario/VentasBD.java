@@ -34,12 +34,12 @@ public class VentasBD {
                 ok = true;
             }
             else{
-                System.out.println("Conexion nula");
+                System.err.println("Conexion nula");
             }
             System.out.println("venta registrada");
         }
         catch(SQLException cnfe){
-            System.out.println("Error en VentasBD agregarVenta "+ cnfe.getMessage());
+            System.err.println("Error en VentasBD agregarVenta "+ cnfe.getMessage());
         }                    
         return ok;
     }
@@ -64,7 +64,7 @@ public class VentasBD {
             }
         }
         catch(SQLException cnfe){
-            System.out.println("Error al obtener proveedor "+ cnfe.getMessage());
+            System.err.println("Error en VentasBD getVenta "+ cnfe.getMessage());
         }
         return venta;
     }
@@ -91,7 +91,7 @@ public class VentasBD {
             }
         }
         catch(SQLException cnfe){
-            System.out.println("Error en VentasBD getDatosFactura "+cnfe.getMessage());
+            System.err.println("Error en VentasBD getDatosFactura "+cnfe.getMessage());
         }
         
         return resultados;
@@ -107,7 +107,7 @@ public class VentasBD {
             }
         }
         catch(SQLException cnfe){
-            System.out.println("Error en VentasBD "+cnfe.getMessage());
+            System.err.println("Error en VentasBD getVentas "+cnfe.getMessage());
         }
         
         return resultados;

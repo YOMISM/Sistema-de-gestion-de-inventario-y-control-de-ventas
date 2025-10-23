@@ -17,7 +17,6 @@ import javax.swing.JOptionPane;
  * @author angel
  */
 public class DetallesVentaBD {
-    private ResultSet resultados;
     private PreparedStatement ps;
     private final Connection conexion;
 
@@ -25,7 +24,11 @@ public class DetallesVentaBD {
         this.conexion = conexion;
     }
     
-    public void setDetalles(DetallesVenta detalles){
+    public boolean setDetalles(DetallesVenta detalles){
+        boolean ok = false;
+        System.out.println("detallesVenta, El valor de VentaID es " + detalles.getIdVenta());
+        System.out.println("detallesVenta, El valor de IdProducto es "+ detalles.getIdProducto());
+        
         try{
             if(conexion != null){
                 ps = conexion.prepareStatement("INSERT INTO `detallesventa` (`idDetalleVenta`, `idVenta`, "
@@ -38,12 +41,14 @@ public class DetallesVentaBD {
                 ps.setDouble(5, redondear(detalles.getPrecioUnidad()));
                 ps.executeUpdate();
                 System.out.println("detalles venta agregado con exito");
+                ok = true;
             }
         }
         catch(SQLException cnfe){
-            System.out.println("DetallesVentaBD setDetalles "+cnfe.getMessage());
+            System.err.println("DetallesVentaBD setDetalles "+cnfe.getMessage());
             JOptionPane.showMessageDialog(null,"DetallesVentaBD setDetalles " +cnfe.getMessage());
         }
+        return ok;
     }
     
         private double redondear(double numero){

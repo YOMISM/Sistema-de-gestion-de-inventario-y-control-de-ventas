@@ -6,7 +6,7 @@ package ventanas;
 
 import static VentanasEmergentes.InformacionCliente.crearVentanaInformacionCliente;
 import inventario.Clientes;
-import inventario.ClientesBD;
+import inventario.ClienteBD;
 import inventario.ObtenerParametros;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -25,7 +25,7 @@ public class clientesPanel extends javax.swing.JPanel {
      */
     Connection conexion;
     ObtenerParametros parametros;
-    ClientesBD clienteBD;
+    ClienteBD clienteBD;
     DefaultTableModel modeloAgregar;
     boolean actualizado = false;
     
@@ -34,7 +34,7 @@ public class clientesPanel extends javax.swing.JPanel {
         initComponents();
         conexion = con;
         modeloAgregar = (DefaultTableModel) tablaClientes.getModel();
-        clienteBD = new ClientesBD(conexion);    
+        clienteBD = new ClienteBD(conexion);    
         cargarClientes();
     }
 
@@ -386,9 +386,9 @@ public class clientesPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_botonTodosActionPerformed
     
     private void cargarClientes(){
-        ClientesBD clientes;
+        ClienteBD clientes;
         ResultSet set;
-        clientes = new ClientesBD(conexion);
+        clientes = new ClienteBD(conexion);
         set = clientes.cargarClientes();
         float precio;
         limpiarTablas();

@@ -14,12 +14,12 @@ import javax.swing.JOptionPane;
  *
  * @author angel
  */
-public class ClientesBD {
+public class ClienteBD {
     private ResultSet resultados;
     private PreparedStatement ps;
     private final Connection conexion;
 
-    public ClientesBD(Connection conexion) {
+    public ClienteBD(Connection conexion) {
         this.conexion = conexion;
     }
     

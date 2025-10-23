@@ -5,7 +5,7 @@
 package ventanas;
 
 import static Reportes.Ticket.imprimir;
-import inventario.ClientesBD;
+import inventario.ClienteBD;
 import inventario.ObtenerParametros;
 import inventario.VentasBD;
 import java.sql.Connection;
@@ -24,7 +24,7 @@ public class reportesPanel extends javax.swing.JPanel {
      */
     Connection conexion;
     ObtenerParametros parametros;
-    ClientesBD clienteBD;
+    ClienteBD clienteBD;
     DefaultTableModel modeloAgregar;
     boolean actualizado = false;
     
@@ -34,7 +34,7 @@ public class reportesPanel extends javax.swing.JPanel {
         conexion = con;
         this.parametros = parametros;
         modeloAgregar = (DefaultTableModel) tablaClientes.getModel();
-        clienteBD = new ClientesBD(conexion);    
+        clienteBD = new ClienteBD(conexion);    
         cargarClientes();
     }
 

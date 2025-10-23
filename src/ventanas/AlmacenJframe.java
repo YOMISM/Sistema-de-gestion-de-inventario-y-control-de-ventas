@@ -52,43 +52,45 @@ public class AlmacenJframe extends javax.swing.JFrame{
     
     public AlmacenJframe(Connection con, String nombre) {
         conexion = con;
-        parametros = new ObtenerParametros();
-        initComponents();
-        fechaLabel.setText(parametros.getFecha().format(formato));
-        iniciarDia(parametros.isDia());
-        if(!nombre.equals("Ventas")){
-            panelInicio = new inicioPanel();
-            Paneles.add(panelInicio);
+        if (con != null){
+            parametros = new ObtenerParametros();
+            initComponents();
+            fechaLabel.setText(parametros.getFecha().format(formato));
+            iniciarDia(parametros.isDia());
+            if(!nombre.equals("Ventas")){
+                panelInicio = new inicioPanel();
+                Paneles.add(panelInicio);
+            }
+            else{
+                panelVentas = new ventasPanel(conexion, parametros);
+                Paneles.add(panelVentas);
+                this.remove(barraSuperior);
+            }
+            ultimoPanel = panelInicio;
+            System.out.println(fecha.now());
         }
-        else{
-            panelVentas = new ventasPanel(conexion, parametros);
-            Paneles.add(panelVentas);
-            this.remove(barraSuperior);
-        }
-        ultimoPanel = panelInicio;
-        System.out.println(fecha.now());
+
     }
     
     public static void iniciarAlmacen(Connection con, String nombre){
-        try {
-                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                    if ("Nimbus".equals(info.getName())) {
-                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                        break;
-                    }
-                }
+            try {
+                 for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                     if ("Nimbus".equals(info.getName())) {
+                         javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                         break;
+                     }
+                 }
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-                java.util.logging.Logger.getLogger(AlmacenJframe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                 java.util.logging.Logger.getLogger(AlmacenJframe.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-            //</editor-fold
-            /* Create and display the form */
+             //</editor-fold
+             /* Create and display the form */
             java.awt.EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    new AlmacenJframe(con, nombre).setVisible(true);
-                }
+                 @Override
+                 public void run() {
+                     new AlmacenJframe(con, nombre).setVisible(true);
+                 }
             });
-            
     }
 
 
@@ -123,18 +125,17 @@ public class AlmacenJframe extends javax.swing.JFrame{
         jLabel5 = new javax.swing.JLabel();
         botonAjustes = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        panelBotones = new javax.swing.JPanel();
-        botonCambiar = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        botonCerrar = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
 
         jMenuItem1.setText("jMenuItem1");
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setExtendedState(this.MAXIMIZED_BOTH);
         setMinimumSize(new java.awt.Dimension(1214, 820));
-        setUndecorated(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
         addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 formKeyPressed(evt);
@@ -472,90 +473,6 @@ public class AlmacenJframe extends javax.swing.JFrame{
 
         jPanel1.add(barraSuperior, java.awt.BorderLayout.CENTER);
 
-        panelBotones.setBackground(new java.awt.Color(255, 0, 0));
-        panelBotones.setMaximumSize(new java.awt.Dimension(200, 50));
-        panelBotones.setMinimumSize(new java.awt.Dimension(200, 50));
-        panelBotones.setName(""); // NOI18N
-        panelBotones.setOpaque(false);
-        panelBotones.setPreferredSize(new java.awt.Dimension(200, 50));
-        panelBotones.setLayout(new javax.swing.BoxLayout(panelBotones, javax.swing.BoxLayout.LINE_AXIS));
-
-        botonCambiar.setBackground(new java.awt.Color(255, 153, 0));
-
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("  Cerrar "); // NOI18N
-        jLabel8.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jLabel8.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel8MouseClicked(evt);
-            }
-        });
-
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setText("  Sección"); // NOI18N
-        jLabel9.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel9MouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout botonCambiarLayout = new javax.swing.GroupLayout(botonCambiar);
-        botonCambiar.setLayout(botonCambiarLayout);
-        botonCambiarLayout.setHorizontalGroup(
-            botonCambiarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(botonCambiarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        botonCambiarLayout.setVerticalGroup(
-            botonCambiarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(botonCambiarLayout.createSequentialGroup()
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        panelBotones.add(botonCambiar);
-
-        botonCerrar.setBackground(new java.awt.Color(255, 0, 0));
-        botonCerrar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                botonCerrarMouseClicked(evt);
-            }
-        });
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 60)); // NOI18N
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("x");
-        jLabel4.setToolTipText("");
-        jLabel4.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel4MouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout botonCerrarLayout = new javax.swing.GroupLayout(botonCerrar);
-        botonCerrar.setLayout(botonCerrarLayout);
-        botonCerrarLayout.setHorizontalGroup(
-            botonCerrarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-        );
-        botonCerrarLayout.setVerticalGroup(
-            botonCerrarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 70, Short.MAX_VALUE)
-        );
-
-        panelBotones.add(botonCerrar);
-
-        jPanel1.add(panelBotones, java.awt.BorderLayout.EAST);
-
         jPanel2.add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
         getContentPane().add(jPanel2);
@@ -621,24 +538,6 @@ public class AlmacenJframe extends javax.swing.JFrame{
         // TODO add your handling code here:
     }//GEN-LAST:event_botonClientesMouseExited
 
-    private void botonCerrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCerrarMouseClicked
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(AlmacenJframe.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.exit(0);
-    }//GEN-LAST:event_botonCerrarMouseClicked
-
-    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        try {
-            conexion.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(AlmacenJframe.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.exit(0);
-    }//GEN-LAST:event_jLabel4MouseClicked
-
     private void botonReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonReportesMouseClicked
         reportesPanel reportes = new reportesPanel(conexion, parametros);
         abrirVentana(reportes);
@@ -652,15 +551,14 @@ public class AlmacenJframe extends javax.swing.JFrame{
         // TODO add your handling code here:
     }//GEN-LAST:event_botonReportesMouseExited
 
-    private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
-        dispose();
-        cargarLogin(conexion);
-    }//GEN-LAST:event_jLabel9MouseClicked
-
-    private void jLabel8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel8MouseClicked
-        dispose();
-        cargarLogin(conexion);
-    }//GEN-LAST:event_jLabel8MouseClicked
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            conexion.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(AlmacenJframe.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.exit(0);
+    }//GEN-LAST:event_formWindowClosing
 //carga y elimina los JPanel
     private void abrirVentana(JPanel panel){
         try{
@@ -810,8 +708,6 @@ public class AlmacenJframe extends javax.swing.JFrame{
     private javax.swing.JPanel Paneles;
     private javax.swing.JPanel barraSuperior;
     private javax.swing.JPanel botonAjustes;
-    private javax.swing.JPanel botonCambiar;
-    private javax.swing.JPanel botonCerrar;
     private javax.swing.JPanel botonClientes;
     private javax.swing.JPanel botonInicio;
     private javax.swing.JPanel botonProductos;
@@ -824,16 +720,12 @@ public class AlmacenJframe extends javax.swing.JFrame{
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel panelBotones;
     // End of variables declaration//GEN-END:variables
 }

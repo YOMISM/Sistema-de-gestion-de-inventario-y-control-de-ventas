@@ -8,8 +8,7 @@ import static Reportes.Ticket.imprimir;
 import static VentanasEmergentes.BuscadorProductos.abrirBuscador;
 import static VentanasEmergentes.agregarCliente.crearVentanaCliente;
 import inventario.Clientes;
-import inventario.ClientesBD;
-import inventario.DepartamentoBD;
+import inventario.ClienteBD;
 import inventario.DetallesVenta;
 import inventario.DetallesVentaBD;
 import inventario.ObtenerParametros;
@@ -17,9 +16,6 @@ import inventario.Productos;
 import inventario.ProductosBD;
 import inventario.Ventas;
 import inventario.VentasBD;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -30,7 +26,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
@@ -48,15 +43,10 @@ public class ventasPanel extends javax.swing.JPanel {
     }
     double total = 0;
     double precio = 0;
-    double iva = 0;
-    double totalBs = 0;
+    int numeroVentas = 0;
     Connection conexion;
-    DefaultTableModel modeloAgregar;
     DefaultTableModel modeloProductos;
-    AgregarDatos agregadorDatos;
-    ajustes ajustess;
     ObtenerParametros parametros;
-    DepartamentoBD departamentosBD;
     ProductosBD productoBD;
     Productos productoSeleccionado = null;
     Ventas venta = new Ventas();
@@ -66,20 +56,17 @@ public class ventasPanel extends javax.swing.JPanel {
      public ventasPanel(Connection con, ObtenerParametros parametros) {
         conexion = con;
         this.parametros = parametros;
-        departamentosBD = new DepartamentoBD(con);
         productoBD = new ProductosBD(con);
         initComponents();
         detallesVenta = new TreeMap<>();
         cedulaTexto.requestFocus();
         modeloProductos = (DefaultTableModel) tablaVentas.getModel();
-        agregadorDatos= new AgregarDatos();
         cantidadSpinner.setValue(1);
         long tiempoActual = System.currentTimeMillis();
         Date date = new Date(tiempoActual);
         venta.setFecha(date);
         venta.setIdVenta(parametros.getFactura());
     }
-
   
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -449,15 +436,13 @@ public class ventasPanel extends javax.swing.JPanel {
     private void tablaVentasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaVentasMouseClicked
         JTable tabla = (JTable)evt.getComponent();
         String codigo = String.valueOf(tabla.getValueAt(tabla.getSelectedRow(), 0));
-        int valor;
-        System.out.println(codigo);
         try{
             productoSeleccionado = productoBD.getProducto(codigo);
             cantidadSpinner.setEnabled(true);
             cantidadSpinner.setValue(tabla.getValueAt(tabla.getSelectedRow(), 2));
         }
         catch(SQLException e){
-            System.out.println(e.getMessage());
+            System.err.println("Error en ventasPanel tablaVentasMouseClicked "+ e.getMessage());
         }
     }//GEN-LAST:event_tablaVentasMouseClicked
 
@@ -521,7 +506,7 @@ public class ventasPanel extends javax.swing.JPanel {
             }    
         }
         catch(Exception e){
-            System.out.println("error en tabla: " + e.getMessage());
+            System.err.println("error en ventasPanel cantidadSpinnerStateChanged en tabla: " + e.getMessage());
         }
     }//GEN-LAST:event_cantidadSpinnerStateChanged
 
@@ -574,44 +559,28 @@ public class ventasPanel extends javax.swing.JPanel {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         int numeroFactura = parametros.getFactura();
         venta.setIdCliente(cedulaTexto.getText());
-        venta.setMonto(Double.parseDouble(redondear(total)));
-        guardarVenta();
-        guardarDetallesVenta();
-        
-        try {
-            imprimir(numeroFactura, parametros, conexion);
-        } catch (SQLException ex) {
-            Logger.getLogger(ventasPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        JOptionPane.showMessageDialog(null, "Venta registrada con éxito");   
-
-        cedulaTexto.setText("");
-        codigoTexto.setText("");
-        nombreTexto.setText("");
-        direccionTexto.setText("");
-        File pdfFile = new File("src/pdf/venta.pdf");
-        
-        if (Desktop.isDesktopSupported()) {
-            Desktop desktop = Desktop.getDesktop();
-            
-            if (pdfFile.exists()) {
-                try {
-                    desktop.open(pdfFile);
-                } catch (IOException e) {
-                }
-            } else {
-                System.out.println("El archivo no existe");
+        venta.setMonto(Double.parseDouble(redondear(total)));     
+        if(guardarVenta() && guardarDetallesVenta()){
+            try {
+                imprimir(numeroFactura, parametros, conexion);
+            } catch (SQLException ex) {
+                Logger.getLogger(ventasPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else {
-            System.out.println("Desktop no está soportado");
+            JOptionPane.showMessageDialog(null, "Venta registrada con éxito");   
+            numeroVentas = numeroVentas + 1;
+            parametros.setFactura(numeroFactura+1);
+            try {
+                parametros.guardar();
+            } catch (IOException ex) {
+                System.err.println("Error en ventasPanel jButton2ActionPerformed al guardar los parametros");
+                Logger.getLogger(ventasPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        parametros.setFactura(numeroFactura + 1);
-        try {
-            parametros.guardar();
-        } catch (IOException ex) {
-            Logger.getLogger(ventasPanel.class.getName()).log(Level.SEVERE, null, ex);
+        else{
+            JOptionPane.showMessageDialog(null, "Error al registrar la venta");
+            System.err.println("Error en ventasPanel jButton2ActionPerformed al guardar los parametros");
         }
-        
+        reiniciarValores();
         limpiarTablas();
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -623,62 +592,59 @@ public class ventasPanel extends javax.swing.JPanel {
        // JOptionPane.showMessageDialog(null, "En construccion");
         abrirBuscador(conexion, parametros, this);
     }//GEN-LAST:event_BuscarBoton1ActionPerformed
-    public void guardarDetallesVenta(){
+    public boolean guardarDetallesVenta(){
+        boolean ok = false;
         try{
             DetallesVentaBD detallesBD = new DetallesVentaBD(conexion);
             ProductosBD productoBD = new ProductosBD(conexion);
             Productos producto = new Productos();
             for (DetallesVenta detalles : detallesVenta.values()) {
-                detallesBD.setDetalles(detalles);
+                System.out.println("en guardarDetallesVenta el valor de VentaId es "+ detalles.getIdVenta());
+                ok = detallesBD.setDetalles(detalles);
                 producto = productoBD.getProducto(detalles.getIdProducto());
                 producto.setCantidad(producto.getCantidad()-detalles.getCantidad());
-                System.out.println(producto.getCantidad()-detalles.getCantidad());
                 productoBD.actualizarCantidad(producto);
             }
         }
         catch(SQLException e){
-            System.out.println("Error al guardar detalles Ventas " + e.getMessage());
+            System.err.println("Error en ventasPanel guardarDetallesVenta " + e.getMessage());
         }
+        return ok;
     }
     
-    public void guardarVenta(){
+    private boolean guardarVenta(){
+        boolean ok = false;
         VentasBD ventaBD = new VentasBD(conexion);
-        ventaBD.agregarVenta(venta);
+        if(ventaBD.agregarVenta(venta)){
+            ok = true;
+        }
+        return ok;
     }
     
-    public void quitarTexto(Component componente){
-        JTextField cajaTexto = (JTextField) componente;
-        if (cajaTexto.getText().equals("0") || cajaTexto.getText().equals("0.0")){
-            cajaTexto.setText(null);
-        }
-        
-    }
-    //pone el texto predeterminado en los textbox vacios cuando pierden el foco
-    public void ponerTexto(Component componente){
-        JTextField cajaTexto = (JTextField) componente;
-        if (cajaTexto.getText().equals("")){
-            cajaTexto.setText("0");
-        }
-    }
-    
-    //solo permite ingresar numeros en los textBox
-    private void soloNumeros(java.awt.event.KeyEvent evt){
-        JTextField cajaTexto = (JTextField)evt.getComponent();
-        int key = evt.getKeyChar();
-        boolean numeros = key >= 48 && key <= 57;
-        boolean borrar = key == 8;
-        boolean enter = key == 10;
-        if (!(numeros || borrar))
-        {
-            evt.consume();
-        }
-        if (cajaTexto.getText().trim().length() == 20 && !(borrar)) {
-            evt.consume();
-        }
+    //Reinicia los valores despues de una venta 
+    private void reiniciarValores(){
+        cedulaTexto.setText("");
+        codigoTexto.setText("");
+        nombreTexto.setText("");
+        direccionTexto.setText("");
+        precioEtiqueta.setText("0");
+        precioBolivaresTexto.setText("0");
+        total = 0;
+        precio = 0;
+        productoSeleccionado = null;
+        venta = new Ventas();
+        verificarCliente = false;
+        detallesVenta = new TreeMap<>();
+        cedulaTexto.requestFocus();
+        cantidadSpinner.setValue(1);
+        long tiempoActual = System.currentTimeMillis();
+        Date date = new Date(tiempoActual);
+        venta.setFecha(date);
+        venta.setIdVenta(parametros.getFactura());
     }
     
     private void buscarCliente(String idCliente) throws SQLException{
-        ClientesBD clienteBD = new ClientesBD(conexion);
+        ClienteBD clienteBD = new ClienteBD(conexion);
         Clientes cliente = clienteBD.getCliente(cedulaTexto.getText());
         System.out.println(cliente.getNombre());
         if (cliente.getNombre() != null){
@@ -697,62 +663,20 @@ public class ventasPanel extends javax.swing.JPanel {
             }
         }
     }
-    //solo permite 4 digitos numericos en los textBox
-    private void porcentajeNumero(java.awt.event.KeyEvent evt){
-        JTextField cajaTexto = (JTextField)evt.getComponent();
-        int key = evt.getKeyChar();
-        boolean numeros = key >= 48 && key <= 57;
-        boolean borrar = key == 8;
-        if (!(numeros || borrar))
-        {
-            evt.consume();
-        }
-        if (cajaTexto.getText().trim().length() == 4 && !(borrar)) {
-            evt.consume();
-        }
-    }
-    //no deja que se cambie el fotoa tro componente
-    private void mantenerEnfoque(Component componente){
-        
-    }
-    
-    private void pasarEnfoque(Component siguiente, java.awt.event.KeyEvent evt ){
-        int key = evt.getKeyCode();
-        boolean enter = key == 10;
-        boolean flechaAbajo = key == 40;
-        boolean flechaArriba = key == 38;
-        
-        if ((enter || flechaAbajo)){
-            siguiente.transferFocus();
-        }
-        if (flechaArriba){
-            siguiente.transferFocusBackward();
-        }
-    }
-    
-    private void insertarEnTabla(String producto, String codigo, int cantidad, int cantMin, float precio, String departamento){  
-        modeloAgregar.addRow(new Object[]{producto,codigo,cantidad, cantMin, precio, departamento});
-    
-    }
-    
-    public void cargarProducto(String codigo) throws SQLException{
-        Productos producto = productoBD.getProducto(codigo);
+
+    public void cargarProducto(String codigoProducto) throws SQLException{
+        Productos producto = productoBD.getProducto(codigoProducto);
         DetallesVenta detalles = new DetallesVenta();
         precio = producto.getPrecioCosto()+producto.getPrecioCosto()*producto.getGanancia()/100+(producto.getPrecioCosto()+producto.getPrecioCosto()*producto.getGanancia()/100)*producto.getIva()/100;
         if(!(producto.getCantidad() == 0)){
-            if((detallesVenta.get(codigo) == null)){
-                System.out.println("Pasa");
+            if((detallesVenta.get(codigoProducto) == null)){
                 modeloProductos.addRow(new Object[]{producto.getCodigo(), producto.getNombre(),1, redondear(precio)});
-                detalles.setIdProducto(codigo);
+                detalles.setIdProducto(codigoProducto);
                 detalles.setCantidad(1);
-                detalles.setPrecioUnidad(Double.valueOf(redondear(precio)));
-                detalles.setIdProducto(codigo);
+                detalles.setPrecioUnidad(Double.parseDouble(redondear(precio)));
                 detalles.setIdVenta(parametros.getFactura());
                 detallesVenta.put(detalles.getIdProducto(),detalles);
                 actualizarPrecio();
-            }
-            else{
-                System.out.println("ya registrado");
             }
         }
         else{
@@ -790,7 +714,7 @@ public class ventasPanel extends javax.swing.JPanel {
         return false; // El objeto no existe
     }
 
-    public void actualizarPrecio(){
+    private void actualizarPrecio(){
         double precio = 0;
         double precioBs = 0;
         for (DetallesVenta detalles : detallesVenta.values()) {
@@ -800,11 +724,8 @@ public class ventasPanel extends javax.swing.JPanel {
         precioBs = total * parametros.getTasa();
         precioEtiqueta.setText(redondear(total));
         precioBolivaresTexto.setText(redondear(precioBs));
-        System.out.println(detallesVenta.values());
     }
-    public void disminuirPrecio(){
-    
-    } 
+
     private String redondear(double numero){
         int decimales = 2;
         String resultado;
@@ -813,9 +734,7 @@ public class ventasPanel extends javax.swing.JPanel {
         resultado = bd.toString();
         return resultado;
     }
-    
-    public void setProductoBuscador(String codigoProducto){
-    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BuscarBoton;

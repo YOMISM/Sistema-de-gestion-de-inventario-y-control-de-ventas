@@ -3,6 +3,7 @@ package inventario;
 
 import Servidor.ConexionBD;
 import java.sql.Connection;
+import javax.swing.JOptionPane;
 import static ventanas.AlmacenJframe.iniciarAlmacen;
 
 
@@ -23,7 +24,12 @@ public class Inventario {
 
     public Inventario(){
         conexion = ConexionBD.getInstance();
-        iniciarAlmacen(conexion, "Administrador");
+        if (conexion != null){
+           iniciarAlmacen(conexion, "Administrador");
+        }
+        else {
+            JOptionPane.showMessageDialog(null, "Error al conectar con la base de datos");
+        }
     }
     
     

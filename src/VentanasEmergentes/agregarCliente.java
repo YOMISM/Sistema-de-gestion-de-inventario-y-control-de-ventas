@@ -4,7 +4,7 @@
  */
 package VentanasEmergentes;
 
-import inventario.ClientesBD;
+import inventario.ClienteBD;
 import inventario.DepartamentoBD;
 import inventario.ObtenerParametros;
 import inventario.Productos;
@@ -284,7 +284,7 @@ public class agregarCliente extends javax.swing.JFrame {
 
     private void guardarBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarBotonActionPerformed
         if(idClienteTexto.getText() != null && nombreTexto.getText() != null && direccionTexto.getText() != null && telefonoTexto.getText() != null){
-             ClientesBD clienteBD = new ClientesBD(conexion);
+             ClienteBD clienteBD = new ClienteBD(conexion);
              clienteBD.SetCliente(idClienteTexto.getText(), nombreTexto.getText(), direccionTexto.getText(), telefonoTexto.getText());
              dispose();
              JOptionPane.showMessageDialog(null, "Cliente agregado con éxito");

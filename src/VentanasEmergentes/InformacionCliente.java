@@ -5,7 +5,7 @@
 package VentanasEmergentes;
 
 import inventario.Clientes;
-import inventario.ClientesBD;
+import inventario.ClienteBD;
 import inventario.ProveedoresBD;
 import java.awt.Component;
 import java.sql.Connection;
@@ -255,7 +255,7 @@ public class InformacionCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_editarBotonMouseClicked
 
     private void guardarBotonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_guardarBotonMouseClicked
-        ClientesBD clienteBD = new ClientesBD(conexion);
+        ClienteBD clienteBD = new ClienteBD(conexion);
         clientes.setNombre(nombreTexto.getText());
         clientes.setDireccion(direccionTexto.getText());
         clientes.setTelefono(telefonoTexto.getText());
@@ -274,7 +274,7 @@ public class InformacionCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_eliminarBotonMouseClicked
 
     private void eliminarBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBotonActionPerformed
-        ClientesBD clienteBD = new ClientesBD(conexion);
+        ClienteBD clienteBD = new ClienteBD(conexion);
         clienteBD.eliminarCliente(identificador);
         dispose();
     }//GEN-LAST:event_eliminarBotonActionPerformed
@@ -318,7 +318,7 @@ public class InformacionCliente extends javax.swing.JFrame {
         return ok;     
     }
     public void cargarCliente(String identificador) throws SQLException{
-        ClientesBD clientesBD = new ClientesBD(conexion);
+        ClienteBD clientesBD = new ClienteBD(conexion);
         clientes = clientesBD.getCliente(identificador);
         identificadorTexto.setText(identificador);
         nombreTexto.setText(clientes.getNombre());
