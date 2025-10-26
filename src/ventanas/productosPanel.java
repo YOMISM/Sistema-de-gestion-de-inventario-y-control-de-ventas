@@ -167,11 +167,6 @@ public class productosPanel extends javax.swing.JPanel {
 
         comboBuscarDepartamentos.setFont(new java.awt.Font("Yu Gothic UI", 0, 24)); // NOI18N
         comboBuscarDepartamentos.setName("departamentos2"); // NOI18N
-        comboBuscarDepartamentos.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                comboBuscarDepartamentosItemStateChanged(evt);
-            }
-        });
         comboBuscarDepartamentos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboBuscarDepartamentosActionPerformed(evt);
@@ -719,19 +714,6 @@ public class productosPanel extends javax.swing.JPanel {
             
         }
     }//GEN-LAST:event_TablaProductosMouseClicked
-
-    private void comboBuscarDepartamentosItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboBuscarDepartamentosItemStateChanged
-            DepartamentoBD departamento= new DepartamentoBD(conexion);
-            int codigo;
-            try {
-                    codigo = departamento.codigoDepartamento(comboBuscarDepartamentos.getSelectedItem().toString());
-                    System.out.println(codigo);
-                    cargarProductosDepartamentos(codigo);
-                } catch (Exception ex) {
-                    Logger.getLogger(AlmacenJframe.class.getName()).log(Level.SEVERE, null, ex);
-                }
-    
-    }//GEN-LAST:event_comboBuscarDepartamentosItemStateChanged
 
     private void comboBuscarDepartamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBuscarDepartamentosActionPerformed
 

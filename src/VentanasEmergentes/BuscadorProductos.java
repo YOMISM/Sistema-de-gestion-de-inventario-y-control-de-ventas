@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import ventanas.AlmacenJframe;
+import ventanas.ajustesInventarioPanel;
 import ventanas.ventasPanel;
 
 /**
@@ -33,19 +34,33 @@ public class BuscadorProductos extends javax.swing.JFrame {
      */
     
     Connection conexion;
-    ventasPanel ventana;
+    ventasPanel ventanaV;
+    ajustesInventarioPanel ventanaA;
+    boolean ventas;
     String codigo;
     DefaultTableModel modeloProductos;
     DepartamentoBD departamentosBD;
+    
     public BuscadorProductos(Connection con, ObtenerParametros parametros, ventasPanel ventanaVentas) {
+        ventas = true;
         conexion = con;
-        ventana = ventanaVentas;
+        ventanaV = ventanaVentas;
         departamentosBD = new DepartamentoBD(con);
         initComponents();
         modeloProductos = (DefaultTableModel) TablaProductos.getModel();
         cargarDepartamentos(comboBuscarDepartamentos);
-        cargarProductos();
-        
+        cargarProductos();      
+    }
+    
+    public BuscadorProductos(Connection con, ObtenerParametros parametros, ajustesInventarioPanel ventanaAjustesInventario) {
+        ventas = false;
+        conexion = con;
+        ventanaA = ventanaAjustesInventario;
+        departamentosBD = new DepartamentoBD(con);
+        initComponents();
+        modeloProductos = (DefaultTableModel) TablaProductos.getModel();
+        cargarDepartamentos(comboBuscarDepartamentos);
+        cargarProductos();    
     }
 
     /**
@@ -64,7 +79,7 @@ public class BuscadorProductos extends javax.swing.JFrame {
         CodigoTexto = new javax.swing.JTextField();
         BuscarBoton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel6.setFocusable(false);
 
@@ -193,16 +208,25 @@ public class BuscadorProductos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void TablaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablaProductosMouseClicked
-
-        if (evt.getClickCount() == 2){
-            JTable tabla = (JTable)evt.getComponent();
-            codigo = String.valueOf(tabla.getValueAt(tabla.getSelectedRow(), 0));
-            try {
-                ventana.cargarProducto(codigo);
-            } catch (SQLException ex) {
-                Logger.getLogger(BuscadorProductos.class.getName()).log(Level.SEVERE, null, ex);
+        if (ventas){
+            if (evt.getClickCount() == 2){
+                JTable tabla = (JTable)evt.getComponent();
+                codigo = String.valueOf(tabla.getValueAt(tabla.getSelectedRow(), 0));
+                try {
+                    ventanaV.cargarProducto(codigo);
+                } catch (SQLException ex) {
+                    Logger.getLogger(BuscadorProductos.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                dispose();
             }
-            dispose();
+        }
+        else{
+            if (evt.getClickCount() == 2){
+                JTable tabla = (JTable)evt.getComponent();
+                codigo = String.valueOf(tabla.getValueAt(tabla.getSelectedRow(), 0));
+                ventanaA.cargarProducto(codigo);
+                dispose();
+            }
         }
     }//GEN-LAST:event_TablaProductosMouseClicked
 
@@ -305,6 +329,38 @@ public class BuscadorProductos extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new BuscadorProductos(con, parametros, ventanaVentas).setVisible(true);
+            }
+        });
+    }
+    
+    public static void abrirBuscador(Connection con, ObtenerParametros parametros, ajustesInventarioPanel inventarioPanel) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(BuscadorProductos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(BuscadorProductos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(BuscadorProductos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(BuscadorProductos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new BuscadorProductos(con, parametros, inventarioPanel).setVisible(true);
             }
         });
     }

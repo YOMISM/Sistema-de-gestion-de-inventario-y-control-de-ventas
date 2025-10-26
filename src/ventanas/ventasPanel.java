@@ -16,6 +16,8 @@ import inventario.Productos;
 import inventario.ProductosBD;
 import inventario.Ventas;
 import inventario.VentasBD;
+import java.awt.Graphics;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -25,6 +27,8 @@ import java.sql.SQLException;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import java.awt.Image;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
@@ -52,6 +56,7 @@ public class ventasPanel extends javax.swing.JPanel {
     Ventas venta = new Ventas();
     boolean verificarCliente = false;
     TreeMap<String,DetallesVenta> detallesVenta;
+    private Image imagen;
     
      public ventasPanel(Connection con, ObtenerParametros parametros) {
         conexion = con;
@@ -66,6 +71,7 @@ public class ventasPanel extends javax.swing.JPanel {
         Date date = new Date(tiempoActual);
         venta.setFecha(date);
         venta.setIdVenta(parametros.getFactura());
+        
     }
   
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -77,7 +83,7 @@ public class ventasPanel extends javax.swing.JPanel {
         codigoTexto = new javax.swing.JTextField();
         BuscarBoton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        terminarBoton = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         cantidadSpinner = new javax.swing.JSpinner();
         jLabel4 = new javax.swing.JLabel();
@@ -93,7 +99,7 @@ public class ventasPanel extends javax.swing.JPanel {
         precioBolivaresTexto = new javax.swing.JLabel();
         precioEtiqueta = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        BuscarBoton1 = new javax.swing.JButton();
+        seleccionarBoton = new javax.swing.JButton();
 
         setName("ventasPanel"); // NOI18N
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
@@ -183,16 +189,22 @@ public class ventasPanel extends javax.swing.JPanel {
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jButton2.setText("Terminar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        terminarBoton.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        terminarBoton.setText("Terminar");
+        terminarBoton.setEnabled(false);
+        terminarBoton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                terminarBotonActionPerformed(evt);
             }
         });
 
         jButton3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton3.setText("Cancelar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         cantidadSpinner.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         cantidadSpinner.setEnabled(false);
@@ -315,15 +327,16 @@ public class ventasPanel extends javax.swing.JPanel {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel6.setText("ID:");
 
-        BuscarBoton1.setText("Seleccionar");
-        BuscarBoton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        seleccionarBoton.setText("Seleccionar");
+        seleccionarBoton.setEnabled(false);
+        seleccionarBoton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                BuscarBoton1MouseClicked(evt);
+                seleccionarBotonMouseClicked(evt);
             }
         });
-        BuscarBoton1.addActionListener(new java.awt.event.ActionListener() {
+        seleccionarBoton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BuscarBoton1ActionPerformed(evt);
+                seleccionarBotonActionPerformed(evt);
             }
         });
 
@@ -334,6 +347,18 @@ public class ventasPanel extends javax.swing.JPanel {
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(terminarBoton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton3))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel7Layout.createSequentialGroup()
@@ -358,27 +383,14 @@ public class ventasPanel extends javax.swing.JPanel {
                                             .addComponent(cedulaTexto)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                             .addComponent(BuscarBoton3))
-                                        .addComponent(nombreTexto, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addGap(0, 395, Short.MAX_VALUE))
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel7Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButton2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton3))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(nombreTexto, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(jPanel7Layout.createSequentialGroup()
                                 .addComponent(codigoTexto, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(BuscarBoton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(BuscarBoton1)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())))
+                                .addComponent(seleccionarBoton)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -401,11 +413,11 @@ public class ventasPanel extends javax.swing.JPanel {
                     .addComponent(codigoTexto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(BuscarBoton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(BuscarBoton1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(seleccionarBoton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(scrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(scrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -413,7 +425,7 @@ public class ventasPanel extends javax.swing.JPanel {
                         .addComponent(cantidadSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel4))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton2)
+                        .addComponent(terminarBoton)
                         .addComponent(jButton3)))
                 .addContainerGap(36, Short.MAX_VALUE))
         );
@@ -450,7 +462,7 @@ public class ventasPanel extends javax.swing.JPanel {
         try {
             buscarCliente(cedulaTexto.getText());
         } catch (SQLException ex) {
-            Logger.getLogger(ventasPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ventasPanel.class.getName()).log(Level.SEVERE, "Error al buscar cliente en VentasPanel", ex);
         }
     }//GEN-LAST:event_BuscarBoton3ActionPerformed
 
@@ -530,15 +542,19 @@ public class ventasPanel extends javax.swing.JPanel {
         if(!verificarCliente){
             cedulaTexto.requestFocus();
         }
+        else{
+            seleccionarBoton.setEnabled(true);
+            terminarBoton.setEnabled(true);
+                    
+        }
     }//GEN-LAST:event_cedulaTextoFocusLost
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             eliminarProducto();
-            
             actualizarPrecio();
         } catch (SQLException ex) {
-            Logger.getLogger(ventasPanel.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ventasPanel.class.getName()).log(Level.SEVERE, "Error en ventasPanel", ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -556,7 +572,7 @@ public class ventasPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_cedulaTextoKeyPressed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void terminarBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_terminarBotonActionPerformed
         int numeroFactura = parametros.getFactura();
         venta.setIdCliente(cedulaTexto.getText());
         venta.setMonto(Double.parseDouble(redondear(total)));     
@@ -582,16 +598,20 @@ public class ventasPanel extends javax.swing.JPanel {
         }
         reiniciarValores();
         limpiarTablas();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_terminarBotonActionPerformed
 
-    private void BuscarBoton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BuscarBoton1MouseClicked
+    private void seleccionarBotonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_seleccionarBotonMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_BuscarBoton1MouseClicked
+    }//GEN-LAST:event_seleccionarBotonMouseClicked
 
-    private void BuscarBoton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuscarBoton1ActionPerformed
-       // JOptionPane.showMessageDialog(null, "En construccion");
+    private void seleccionarBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seleccionarBotonActionPerformed
         abrirBuscador(conexion, parametros, this);
-    }//GEN-LAST:event_BuscarBoton1ActionPerformed
+    }//GEN-LAST:event_seleccionarBotonActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        reiniciarValores();
+        limpiarTablas();
+    }//GEN-LAST:event_jButton3ActionPerformed
     public boolean guardarDetallesVenta(){
         boolean ok = false;
         try{
@@ -734,18 +754,17 @@ public class ventasPanel extends javax.swing.JPanel {
         resultado = bd.toString();
         return resultado;
     }
+    
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BuscarBoton;
-    private javax.swing.JButton BuscarBoton1;
     private javax.swing.JButton BuscarBoton3;
     private javax.swing.JSpinner cantidadSpinner;
     private javax.swing.JTextField cedulaTexto;
     private javax.swing.JTextField codigoTexto;
     private javax.swing.JTextField direccionTexto;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -759,6 +778,8 @@ public class ventasPanel extends javax.swing.JPanel {
     private javax.swing.JLabel precioBolivaresTexto;
     private javax.swing.JLabel precioEtiqueta;
     private javax.swing.JScrollPane scrollPane;
+    private javax.swing.JButton seleccionarBoton;
     private javax.swing.JTable tablaVentas;
+    private javax.swing.JButton terminarBoton;
     // End of variables declaration//GEN-END:variables
 }

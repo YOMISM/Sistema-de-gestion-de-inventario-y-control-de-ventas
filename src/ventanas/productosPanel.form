@@ -164,7 +164,6 @@
                 <Property name="name" type="java.lang.String" value="departamentos2" noResource="true"/>
               </Properties>
               <Events>
-                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="comboBuscarDepartamentosItemStateChanged"/>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBuscarDepartamentosActionPerformed"/>
               </Events>
               <AuxValues>

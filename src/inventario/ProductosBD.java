@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  *
@@ -25,11 +26,14 @@ public class ProductosBD {
     public Productos getProducto(String codigo) throws SQLException{
         Productos producto = new Productos();
         resultados = null;
+            if(conexion == null || codigo.trim().isEmpty()){
+                return null;
+            }
         try{
-            if(conexion != null){
-                ps = conexion.prepareCall("SELECT * FROM `productos` WHERE `codigo` = " + codigo);
+                ps = conexion.prepareCall("SELECT * FROM `productos` WHERE `codigo` = ?");
+                ps.setString(1, codigo);
                 resultados = ps.executeQuery();
-                while(resultados.next()){
+                if(resultados.next()){
                     producto.setCodigo(resultados.getString(1));
                     producto.setNombre(resultados.getString(2)); 
                     producto.setCantidad(resultados.getInt(3));
@@ -40,13 +44,13 @@ public class ProductosBD {
                     producto.setIva(resultados.getFloat(8));
                     producto.setRif(resultados.getString(9));
                 }
-                
-            }
+                System.out.println("producto "+ producto.getNombre() + " devuelto con exito");
+            
         }
         catch(SQLException cnfe){
-            System.out.println("Error al obtener producto "+ cnfe.getMessage());
+            System.err.println("Error en ProductosBD getProducto "+ cnfe.getMessage());
+            producto = null;
         }
-
         return producto;
     }
     
@@ -60,7 +64,7 @@ public class ProductosBD {
             }
         }
         catch(SQLException cnfe){
-            System.out.println(cnfe.getMessage());
+            System.err.println("Error en ProductosBD obtenerProductos "+cnfe.getMessage());
         }
         
         return resultados;
@@ -164,5 +168,12 @@ public class ProductosBD {
             System.out.println("Error al obtener producto "+ cnfe.getMessage());
         }
         return producto;
+    }
+    
+    public ArrayList getProductosEnCantidadMinima(){
+        ArrayList<Productos> productos = new ArrayList();
+        resultados = null;
+        
+        return productos;
     }
 }

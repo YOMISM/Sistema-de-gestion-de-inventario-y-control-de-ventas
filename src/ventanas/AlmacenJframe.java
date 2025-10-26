@@ -1,18 +1,13 @@
 package ventanas;
-import inventario.DepartamentoBD;
 import inventario.ObtenerParametros;
-import inventario.ProductosBD;
 import java.awt.Color;
 import java.awt.Component;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
-import static ventanas.LoginID.cargarLogin;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 /*
@@ -31,18 +26,10 @@ public class AlmacenJframe extends javax.swing.JFrame{
      */
     
     Connection conexion;
-    boolean gananciaUltimo;
-    boolean ivaUltimo;
-    double gananciaDefecto = 0;
-    double ivaDefecto = 0;
-    double precioFinalUltimo;
-    DefaultTableModel modelo;
-    DefaultTableModel modeloProductos;
     productosPanel panelProductos;
     ventasPanel ventasPanel;
     JPanel ultimoPanel;
     ajustes ajustess;
-    Usuarios usuarios;
     inicioPanel panelInicio;
     ventasPanel panelVentas;
     ObtenerParametros parametros;
@@ -123,6 +110,8 @@ public class AlmacenJframe extends javax.swing.JFrame{
         jLabel10 = new javax.swing.JLabel();
         botonProveedores = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
+        botonCantidades = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
         botonAjustes = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
 
@@ -192,12 +181,19 @@ public class AlmacenJframe extends javax.swing.JFrame{
         jPanel3.getAccessibleContext().setAccessibleName("");
 
         botonInicio.setBackground(new java.awt.Color(0, 102, 0));
+        botonInicio.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         botonInicio.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         botonInicio.setName("botonAjustes"); // NOI18N
         botonInicio.setPreferredSize(new java.awt.Dimension(100, 50));
         botonInicio.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 botonInicioMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                botonInicioMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                botonInicioMouseExited(evt);
             }
         });
 
@@ -209,16 +205,16 @@ public class AlmacenJframe extends javax.swing.JFrame{
         botonInicio.setLayout(botonInicioLayout);
         botonInicioLayout.setHorizontalGroup(
             botonInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 96, Short.MAX_VALUE)
             .addGroup(botonInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonInicioLayout.createSequentialGroup()
-                    .addGap(0, 27, Short.MAX_VALUE)
+                    .addGap(0, 25, Short.MAX_VALUE)
                     .addComponent(jLabel7)
-                    .addGap(0, 28, Short.MAX_VALUE)))
+                    .addGap(0, 26, Short.MAX_VALUE)))
         );
         botonInicioLayout.setVerticalGroup(
             botonInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 50, Short.MAX_VALUE)
+            .addGap(0, 46, Short.MAX_VALUE)
             .addGroup(botonInicioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonInicioLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -272,6 +268,7 @@ public class AlmacenJframe extends javax.swing.JFrame{
         barraSuperior.add(botonProductos);
 
         botonVentas.setBackground(new java.awt.Color(0, 102, 0));
+        botonVentas.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         botonVentas.setName("botonVentas"); // NOI18N
         botonVentas.setPreferredSize(new java.awt.Dimension(100, 50));
         botonVentas.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -294,16 +291,16 @@ public class AlmacenJframe extends javax.swing.JFrame{
         botonVentas.setLayout(botonVentasLayout);
         botonVentasLayout.setHorizontalGroup(
             botonVentasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 96, Short.MAX_VALUE)
             .addGroup(botonVentasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonVentasLayout.createSequentialGroup()
-                    .addGap(0, 21, Short.MAX_VALUE)
+                    .addGap(0, 19, Short.MAX_VALUE)
                     .addComponent(jLabel3)
-                    .addGap(0, 22, Short.MAX_VALUE)))
+                    .addGap(0, 20, Short.MAX_VALUE)))
         );
         botonVentasLayout.setVerticalGroup(
             botonVentasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 50, Short.MAX_VALUE)
+            .addGap(0, 46, Short.MAX_VALUE)
             .addGroup(botonVentasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonVentasLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -314,6 +311,7 @@ public class AlmacenJframe extends javax.swing.JFrame{
         barraSuperior.add(botonVentas);
 
         botonClientes.setBackground(new java.awt.Color(0, 102, 0));
+        botonClientes.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         botonClientes.setName("botonVentas"); // NOI18N
         botonClientes.setPreferredSize(new java.awt.Dimension(100, 50));
         botonClientes.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -336,16 +334,16 @@ public class AlmacenJframe extends javax.swing.JFrame{
         botonClientes.setLayout(botonClientesLayout);
         botonClientesLayout.setHorizontalGroup(
             botonClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 96, Short.MAX_VALUE)
             .addGroup(botonClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonClientesLayout.createSequentialGroup()
-                    .addGap(0, 16, Short.MAX_VALUE)
+                    .addGap(0, 14, Short.MAX_VALUE)
                     .addComponent(jLabel6)
-                    .addGap(0, 17, Short.MAX_VALUE)))
+                    .addGap(0, 15, Short.MAX_VALUE)))
         );
         botonClientesLayout.setVerticalGroup(
             botonClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 50, Short.MAX_VALUE)
+            .addGap(0, 46, Short.MAX_VALUE)
             .addGroup(botonClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonClientesLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -356,6 +354,7 @@ public class AlmacenJframe extends javax.swing.JFrame{
         barraSuperior.add(botonClientes);
 
         botonReportes.setBackground(new java.awt.Color(0, 102, 0));
+        botonReportes.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         botonReportes.setName("botonVentas"); // NOI18N
         botonReportes.setPreferredSize(new java.awt.Dimension(100, 50));
         botonReportes.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -378,16 +377,16 @@ public class AlmacenJframe extends javax.swing.JFrame{
         botonReportes.setLayout(botonReportesLayout);
         botonReportesLayout.setHorizontalGroup(
             botonReportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 96, Short.MAX_VALUE)
             .addGroup(botonReportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonReportesLayout.createSequentialGroup()
-                    .addGap(0, 12, Short.MAX_VALUE)
+                    .addGap(0, 10, Short.MAX_VALUE)
                     .addComponent(jLabel10)
-                    .addGap(0, 13, Short.MAX_VALUE)))
+                    .addGap(0, 11, Short.MAX_VALUE)))
         );
         botonReportesLayout.setVerticalGroup(
             botonReportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 50, Short.MAX_VALUE)
+            .addGap(0, 46, Short.MAX_VALUE)
             .addGroup(botonReportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonReportesLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -398,12 +397,19 @@ public class AlmacenJframe extends javax.swing.JFrame{
         barraSuperior.add(botonReportes);
 
         botonProveedores.setBackground(new java.awt.Color(0, 102, 0));
+        botonProveedores.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         botonProveedores.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         botonProveedores.setName("botonAjustes"); // NOI18N
         botonProveedores.setPreferredSize(new java.awt.Dimension(100, 50));
         botonProveedores.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 botonProveedoresMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                botonProveedoresMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                botonProveedoresMouseExited(evt);
             }
         });
 
@@ -415,16 +421,16 @@ public class AlmacenJframe extends javax.swing.JFrame{
         botonProveedores.setLayout(botonProveedoresLayout);
         botonProveedoresLayout.setHorizontalGroup(
             botonProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 96, Short.MAX_VALUE)
             .addGroup(botonProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonProveedoresLayout.createSequentialGroup()
-                    .addGap(0, 3, Short.MAX_VALUE)
+                    .addGap(0, 1, Short.MAX_VALUE)
                     .addComponent(jLabel5)
-                    .addGap(0, 4, Short.MAX_VALUE)))
+                    .addGap(0, 2, Short.MAX_VALUE)))
         );
         botonProveedoresLayout.setVerticalGroup(
             botonProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 50, Short.MAX_VALUE)
+            .addGap(0, 46, Short.MAX_VALUE)
             .addGroup(botonProveedoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonProveedoresLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -434,13 +440,64 @@ public class AlmacenJframe extends javax.swing.JFrame{
 
         barraSuperior.add(botonProveedores);
 
+        botonCantidades.setBackground(new java.awt.Color(0, 102, 0));
+        botonCantidades.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        botonCantidades.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        botonCantidades.setName("botonCantidades"); // NOI18N
+        botonCantidades.setPreferredSize(new java.awt.Dimension(100, 50));
+        botonCantidades.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonCantidadesMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                botonCantidadesMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                botonCantidadesMouseExited(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Cantidades");
+
+        javax.swing.GroupLayout botonCantidadesLayout = new javax.swing.GroupLayout(botonCantidades);
+        botonCantidades.setLayout(botonCantidadesLayout);
+        botonCantidadesLayout.setHorizontalGroup(
+            botonCantidadesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 96, Short.MAX_VALUE)
+            .addGroup(botonCantidadesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(botonCantidadesLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel4)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        botonCantidadesLayout.setVerticalGroup(
+            botonCantidadesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 46, Short.MAX_VALUE)
+            .addGroup(botonCantidadesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(botonCantidadesLayout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel4)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+
+        barraSuperior.add(botonCantidades);
+
         botonAjustes.setBackground(new java.awt.Color(0, 102, 0));
+        botonAjustes.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         botonAjustes.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         botonAjustes.setName("botonAjustes"); // NOI18N
         botonAjustes.setPreferredSize(new java.awt.Dimension(100, 50));
         botonAjustes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 botonAjustesMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                botonAjustesMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                botonAjustesMouseExited(evt);
             }
         });
 
@@ -452,16 +509,16 @@ public class AlmacenJframe extends javax.swing.JFrame{
         botonAjustes.setLayout(botonAjustesLayout);
         botonAjustesLayout.setHorizontalGroup(
             botonAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 96, Short.MAX_VALUE)
             .addGroup(botonAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonAjustesLayout.createSequentialGroup()
-                    .addGap(0, 19, Short.MAX_VALUE)
+                    .addGap(0, 17, Short.MAX_VALUE)
                     .addComponent(jLabel2)
-                    .addGap(0, 20, Short.MAX_VALUE)))
+                    .addGap(0, 18, Short.MAX_VALUE)))
         );
         botonAjustesLayout.setVerticalGroup(
             botonAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 50, Short.MAX_VALUE)
+            .addGap(0, 46, Short.MAX_VALUE)
             .addGroup(botonAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(botonAjustesLayout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -495,7 +552,8 @@ public class AlmacenJframe extends javax.swing.JFrame{
     }//GEN-LAST:event_botonProveedoresMouseClicked
 
     private void botonVentasMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonVentasMouseExited
-        botonVentas.setBackground(new Color(0,102,0));
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonSalirMouse(boton);
     }//GEN-LAST:event_botonVentasMouseExited
 
     private void botonVentasMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonVentasMouseEntered
@@ -508,11 +566,13 @@ public class AlmacenJframe extends javax.swing.JFrame{
     }//GEN-LAST:event_botonVentasMouseClicked
 
     private void botonProductosMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonProductosMouseExited
-        botonProductos.setBackground(new Color(0,102,0));
+       JPanel boton = (JPanel)evt.getComponent();
+        colorBotonSalirMouse(boton);
     }//GEN-LAST:event_botonProductosMouseExited
 
     private void botonProductosMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonProductosMouseEntered
-        botonProductos.setBackground(new Color(0,60,0));
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonEntrarMouse(boton);
     }//GEN-LAST:event_botonProductosMouseEntered
 
     private void botonProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonProductosMouseClicked
@@ -531,11 +591,13 @@ public class AlmacenJframe extends javax.swing.JFrame{
     }//GEN-LAST:event_botonClientesMouseClicked
 
     private void botonClientesMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonClientesMouseEntered
-        // TODO add your handling code here:
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonEntrarMouse(boton);
     }//GEN-LAST:event_botonClientesMouseEntered
 
     private void botonClientesMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonClientesMouseExited
-        // TODO add your handling code here:
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonSalirMouse(boton);
     }//GEN-LAST:event_botonClientesMouseExited
 
     private void botonReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonReportesMouseClicked
@@ -544,11 +606,13 @@ public class AlmacenJframe extends javax.swing.JFrame{
     }//GEN-LAST:event_botonReportesMouseClicked
 
     private void botonReportesMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonReportesMouseEntered
-        // TODO add your handling code here:
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonEntrarMouse(boton);
     }//GEN-LAST:event_botonReportesMouseEntered
 
     private void botonReportesMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonReportesMouseExited
-        // TODO add your handling code here:
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonSalirMouse(boton);
     }//GEN-LAST:event_botonReportesMouseExited
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -559,6 +623,51 @@ public class AlmacenJframe extends javax.swing.JFrame{
         }
         System.exit(0);
     }//GEN-LAST:event_formWindowClosing
+
+    private void botonCantidadesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCantidadesMouseClicked
+        ajustesInventarioPanel ajusteInventario = new ajustesInventarioPanel(conexion, parametros);
+        abrirVentana(ajusteInventario);
+    }//GEN-LAST:event_botonCantidadesMouseClicked
+
+    private void botonInicioMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonInicioMouseExited
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonSalirMouse(boton);
+    }//GEN-LAST:event_botonInicioMouseExited
+
+    private void botonProveedoresMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonProveedoresMouseExited
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonSalirMouse(boton);
+    }//GEN-LAST:event_botonProveedoresMouseExited
+
+    private void botonCantidadesMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCantidadesMouseExited
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonSalirMouse(boton);
+    }//GEN-LAST:event_botonCantidadesMouseExited
+
+    private void botonAjustesMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonAjustesMouseExited
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonSalirMouse(boton);
+    }//GEN-LAST:event_botonAjustesMouseExited
+
+    private void botonInicioMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonInicioMouseEntered
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonEntrarMouse(boton);
+    }//GEN-LAST:event_botonInicioMouseEntered
+
+    private void botonProveedoresMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonProveedoresMouseEntered
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonEntrarMouse(boton);
+    }//GEN-LAST:event_botonProveedoresMouseEntered
+
+    private void botonCantidadesMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCantidadesMouseEntered
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonEntrarMouse(boton);
+    }//GEN-LAST:event_botonCantidadesMouseEntered
+
+    private void botonAjustesMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonAjustesMouseEntered
+        JPanel boton = (JPanel)evt.getComponent();
+        colorBotonEntrarMouse(boton);
+    }//GEN-LAST:event_botonAjustesMouseEntered
 //carga y elimina los JPanel
     private void abrirVentana(JPanel panel){
         try{
@@ -569,11 +678,11 @@ public class AlmacenJframe extends javax.swing.JFrame{
            this.revalidate();
         }
         else{
-            System.out.println("son iguales");
+            System.err.println("son iguales");
         }
         }
         catch(Exception e){
-            System.out.println("Error en Panel");
+            System.err.println("Error en Panel");
         }
     }
 //elimina los textos por defecto de los textBox cuando tiene el foco
@@ -581,8 +690,7 @@ public class AlmacenJframe extends javax.swing.JFrame{
         JTextField cajaTexto = (JTextField) componente;
         if (cajaTexto.getText().equals("0") || cajaTexto.getText().equals("0.0")){
             cajaTexto.setText(null);
-        }
-        
+        }     
     }
     
 //pone el texto predeterminado en los textbox vacios cuando pierden el foco
@@ -590,102 +698,6 @@ public class AlmacenJframe extends javax.swing.JFrame{
         JTextField cajaTexto = (JTextField) componente;
         if (cajaTexto.getText().equals("")){
             cajaTexto.setText("0");
-        }
-    }
-    
-    //solo permite ingresar numeros en los textBox
-    private void soloNumeros(java.awt.event.KeyEvent evt){
-        JTextField cajaTexto = (JTextField)evt.getComponent();
-        int key = evt.getKeyChar();
-        boolean numeros = key >= 48 && key <= 57;
-        boolean punto = key == 46;
-        boolean borrar = key == 8;
-        boolean enter = key == 10;
-        if (!(numeros || punto || borrar))
-        {
-            evt.consume();
-        }
-        if (cajaTexto.getText().trim().length() == 20 && !(borrar)) {
-            evt.consume();
-        }
-    }
-    //solo permite 4 digitos numericos en los textBox
-    private void porcentajeNumero(java.awt.event.KeyEvent evt){
-        JTextField cajaTexto = (JTextField)evt.getComponent();
-        int key = evt.getKeyChar();
-        boolean numeros = key >= 48 && key <= 57;
-        boolean borrar = key == 8;
-        if (!(numeros || borrar))
-        {
-            evt.consume();
-        }
-        if (cajaTexto.getText().trim().length() == 4 && !(borrar)) {
-            evt.consume();
-        }
-    }
-    
-    private void pasarEnfoque(Component siguiente, java.awt.event.KeyEvent evt ){
-        int key = evt.getKeyCode();
-        boolean enter = key == 10;
-        boolean flechaAbajo = key == 40;
-        boolean flechaArriba = key == 38;
-        
-        if ((enter || flechaAbajo)){
-            siguiente.transferFocus();
-        }
-        if (flechaArriba){
-            siguiente.transferFocusBackward();
-        }
-    }
-    
-    private void insertarEnTabla(String producto, long codigo, int cantidad, int cantMin, float precio, String departamento){
-    
-        modelo.addRow(new Object[]{producto,codigo,cantidad, cantMin, precio, departamento});
-    
-    }
-    
-    private void cargarProductos(){
-        ProductosBD productos;
-        ResultSet set;
-        productos = new ProductosBD(conexion);
-        DepartamentoBD departamento = new DepartamentoBD(conexion);
-        set = productos.obtenerProductos();
-        limpiarTablas();
-        
-        try{
-            while(set.next()){
-                modeloProductos.addRow(new Object[]{set.getLong(1), set.getString(2),
-                set.getInt(3), set.getInt(5), set.getFloat(4), departamento.getNombreDepartamento(set.getInt(6))});
-            }
-        }
-        catch(SQLException e){
-            System.out.println(e.getMessage());
-        }       
-    }
-    
-    private void cargarProductosDepartamentos(int parametro){
-        ProductosBD productos;
-        ResultSet set;
-        productos = new ProductosBD(conexion);
-        DepartamentoBD departamento = new DepartamentoBD(conexion);
-        set = productos.getProductosDepartamentos(parametro);
-        limpiarTablas();
-        
-        try{
-            while(set.next()){
-                modeloProductos.addRow(new Object[]{set.getLong(1), set.getString(2),
-                set.getInt(3), set.getInt(5), set.getFloat(4), departamento.getNombreDepartamento(set.getInt(6))});
-            }
-        }
-        catch(SQLException e){
-            System.out.println(e.getMessage());
-        }
-    }
-    
-    private void limpiarTablas(){
-        int cantidad =modeloProductos.getRowCount()-1;  
-        for(int i=cantidad;i>=0;i--){ 
-            modeloProductos.removeRow(i);
         }
     }
     
@@ -702,12 +714,20 @@ public class AlmacenJframe extends javax.swing.JFrame{
         this.fecha = fecha;
         fechaLabel.setText(fecha.format(formato));
     }
- 
-
+    
+    private void colorBotonEntrarMouse(JPanel boton){
+        boton.setBackground(new Color(0,60,0));
+    }
+    
+    private void colorBotonSalirMouse(JPanel boton){
+        boton.setBackground(new Color(0,102,0));
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Paneles;
     private javax.swing.JPanel barraSuperior;
     private javax.swing.JPanel botonAjustes;
+    private javax.swing.JPanel botonCantidades;
     private javax.swing.JPanel botonClientes;
     private javax.swing.JPanel botonInicio;
     private javax.swing.JPanel botonProductos;
@@ -720,6 +740,7 @@ public class AlmacenJframe extends javax.swing.JFrame{
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
