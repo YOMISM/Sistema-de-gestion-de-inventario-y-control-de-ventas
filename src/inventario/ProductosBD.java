@@ -173,7 +173,29 @@ public class ProductosBD {
     public ArrayList getProductosEnCantidadMinima(){
         ArrayList<Productos> productos = new ArrayList();
         resultados = null;
-        
+        try{
+            if(conexion != null){
+                ps = conexion.prepareCall("SELECT * FROM productos WHERE cantidad <= cantidadMin;");
+                resultados = ps.executeQuery();
+            }
+            while(resultados.next()){
+                Productos producto = new Productos();
+                producto.setCodigo(resultados.getString(1));
+                producto.setNombre(resultados.getString(2)); 
+                producto.setCantidad(resultados.getInt(3));
+                producto.setCantidadMin(resultados.getInt(4));
+                producto.setPrecioCosto(resultados.getFloat(5));
+                producto.setGanancia(resultados.getFloat(6));
+                producto.setDepartamento(resultados.getInt(7));
+                producto.setIva(resultados.getFloat(8));
+                producto.setRif(resultados.getString(9));
+                productos.add(producto);        
+            }
+        }
+        catch(SQLException cnfe){
+            System.err.println("Error en ProductosBD getProductosEnCantidadMinima "+cnfe.getMessage());
+            productos = null;
+        }
         return productos;
     }
 }

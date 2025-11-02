@@ -24,6 +24,7 @@ import inventario.Productos;
 import inventario.ReporteInventario;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
@@ -42,13 +43,10 @@ public class productosPanel extends javax.swing.JPanel {
     Connection conexion;
     boolean gananciaUltimo;
     boolean ivaUltimo;
-    double gananciaDefecto = 0;
-    double ivaDefecto = 0;
     double precioFinalUltimo;
     DefaultTableModel modeloAgregar;
     DefaultTableModel modeloProductos;
     AgregarDatos agregadorDatos;
-    ajustes ajustess;
     ObtenerParametros parametros;
     DepartamentoBD departamentosBD;
     ProveedoresBD proveedorBD;
@@ -61,8 +59,11 @@ public class productosPanel extends javax.swing.JPanel {
         proveedorBD = new ProveedoresBD(con);
         initComponents();
         modeloProductos = (DefaultTableModel) TablaProductos.getModel();
+        cantidadMinimaTexto.setVisible(false);
+        cantidadMinimaNumeroTexto.setVisible(false);
         cargarDepartamentos(comboDepartamentos);
         cargarDepartamentos(comboBuscarDepartamentos);
+        verificarProductosCantidadMinima();
         cargarProveedores(comboProveedores);
         modeloAgregar = (DefaultTableModel) TablaAgregarProductos.getModel();
         agregadorDatos= new AgregarDatos();
@@ -80,6 +81,8 @@ public class productosPanel extends javax.swing.JPanel {
         CodigoTexto = new javax.swing.JTextField();
         BuscarBoton = new javax.swing.JButton();
         BuscarBoton1 = new javax.swing.JButton();
+        cantidadMinimaTexto = new javax.swing.JLabel();
+        cantidadMinimaNumeroTexto = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         productoTexto = new javax.swing.JTextField();
         precioTexto = new javax.swing.JTextField();
@@ -199,6 +202,12 @@ public class productosPanel extends javax.swing.JPanel {
             }
         });
 
+        cantidadMinimaTexto.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        cantidadMinimaTexto.setText("Cantidad de productos por debajo de mínimo:");
+
+        cantidadMinimaNumeroTexto.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        cantidadMinimaNumeroTexto.setText("0");
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -215,20 +224,28 @@ public class productosPanel extends javax.swing.JPanel {
                         .addComponent(BuscarBoton)
                         .addGap(18, 18, 18)
                         .addComponent(BuscarBoton1)
-                        .addGap(0, 477, Short.MAX_VALUE)))
+                        .addGap(18, 18, 18)
+                        .addComponent(cantidadMinimaTexto)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cantidadMinimaNumeroTexto)
+                        .addGap(0, 72, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(CodigoTexto, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
-                    .addComponent(comboBuscarDepartamentos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(BuscarBoton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(BuscarBoton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(CodigoTexto, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(comboBuscarDepartamentos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(BuscarBoton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(BuscarBoton1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cantidadMinimaTexto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cantidadMinimaNumeroTexto)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(tablaProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
+                .addComponent(tablaProductos, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -716,20 +733,23 @@ public class productosPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_TablaProductosMouseClicked
 
     private void comboBuscarDepartamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBuscarDepartamentosActionPerformed
-
         DepartamentoBD departamento= new DepartamentoBD(conexion);
         int codigo;
         String nombre = (String)comboBuscarDepartamentos.getSelectedItem();
-        if (nombre.equals("Sin filtro")){
-            cargarProductos();
-        }
-        else{
-            try {
-                codigo = departamento.codigoDepartamento(nombre);
-                cargarProductosDepartamentos(codigo);
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
+        switch (nombre) {
+            case "Sin filtro":
+                cargarProductos();
+                break;
+            case "Minimos":
+                CargarProductosCantidadMinima();
+                break;
+            default:
+                try {
+                    codigo = departamento.codigoDepartamento(nombre);
+                    cargarProductosDepartamentos(codigo);
+                } catch (SQLException ex) {
+                    System.err.println(ex.getMessage());
+                }   break;
         }
 
     }//GEN-LAST:event_comboBuscarDepartamentosActionPerformed
@@ -1309,6 +1329,41 @@ public void quitarTexto(Component componente){
         resultado = bd.toString();
         return resultado;
     }
+    
+    private void verificarProductosCantidadMinima(){
+        ProductosBD productosBD = new ProductosBD(conexion);
+        int cantidadProductosMinima;
+        ArrayList<Productos> productosCantidadMinima= productosBD.getProductosEnCantidadMinima();
+        cantidadProductosMinima = productosCantidadMinima.size();
+        if(cantidadProductosMinima > 0){      
+            cantidadMinimaTexto.setVisible(true);
+            cantidadMinimaNumeroTexto.setVisible(true);
+            cantidadMinimaNumeroTexto.setText(String.valueOf(cantidadProductosMinima));
+            comboBuscarDepartamentos.addItem("Minimos");
+        }
+    }
+    
+    private void CargarProductosCantidadMinima(){
+        limpiarTablas();
+        ProductosBD productosBD = new ProductosBD(conexion);
+        ArrayList<Productos> productosCantidadMinima= productosBD.getProductosEnCantidadMinima();
+        System.out.println("PASA 1");
+        try{
+            for(Productos producto : productosCantidadMinima){
+                System.out.println("PASA 2");
+                float precioCosto = producto.getPrecioCosto();
+                float ganancia = producto.getGanancia();
+                float iva = producto.getIva();
+                float precio;
+                precio = (precioCosto*(1+ganancia/100))*(1+iva/100);
+                modeloProductos.addRow(new Object[]{producto.getCodigo(), producto.getNombre(),
+                producto.getCantidad(), redondear(precio)});           
+            }
+        }
+        catch(Exception e){
+            System.err.println("Error en productosPanel CargarProductosCantidadMinima: "+e.getMessage());
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BuscarBoton;
@@ -1317,6 +1372,8 @@ public void quitarTexto(Component componente){
     private javax.swing.JTable TablaAgregarProductos;
     private javax.swing.JTable TablaProductos;
     private javax.swing.JTextField cantidadMinTexto;
+    private javax.swing.JLabel cantidadMinimaNumeroTexto;
+    private javax.swing.JLabel cantidadMinimaTexto;
     private javax.swing.JTextField cantidadTexto;
     private javax.swing.JTextField codigoTexto;
     private javax.swing.JComboBox<String> comboBuscarDepartamentos;
