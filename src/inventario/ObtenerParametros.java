@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import javax.swing.JOptionPane;
 import java.time.LocalDate;
@@ -25,6 +26,11 @@ public class ObtenerParametros{
     private LocalDate fecha;
     private final DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
+    public ObtenerParametros(){
+        propiedades = new Properties();
+        leerParametros();
+    }
+    
     public LocalDate getFecha() {
         return fecha;
     }
@@ -77,23 +83,39 @@ public class ObtenerParametros{
         return isErrorTasa();
     }
     
-    public ObtenerParametros(){
-        /**Creamos un Objeto de tipo Properties*/
-        propiedades = new Properties();
-        leerParametros();
-    }
     private void tasaAutomatica(){
         ObtenerTasa obtenerTasa = new ObtenerTasa();
         setTasa(obtenerTasa.getTasa());
         errorTasa = obtenerTasa.isOk();
     }
-
+    
     private void leerParametros(){
         try{
-            /**Cargamos el archivo desde la ruta especificada*/
-            File file = new File(".");
-            cadena = file.getCanonicalPath() + File.separator + "Datos.txt";
-            propiedades.load(new FileInputStream(cadena));
+            // Primero buscar en el directorio actual (para cuando se ejecuta desde IDE)
+            File archivoLocal = new File("Datos.txt");
+
+            // Si no existe localmente, buscar como recurso del JAR
+            if (!archivoLocal.exists()) {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream("Datos.txt");
+                if (inputStream != null) {
+                    propiedades.load(inputStream);
+                    inputStream.close();
+                    cadena = "Datos.txt (desde recursos JAR)";
+                    System.out.println("Cargando desde recursos JAR: " + cadena);
+                } else {
+                    // Si no está en el JAR, crear uno nuevo
+                    crearArchivoConfiguracion(archivoLocal);
+                    propiedades.load(new FileInputStream(archivoLocal));
+                    cadena = archivoLocal.getAbsolutePath();
+                    System.out.println("Cargando desde filesystem: " + cadena);
+                }
+            } else {
+                // Cargar desde filesystem
+                propiedades.load(new FileInputStream(archivoLocal));
+                cadena = archivoLocal.getAbsolutePath();
+                System.out.println("Cargando desde filesystem: " + cadena);
+            }
+
             /**Obtenemos los parametros definidos en el archivo*/
             setNombre(propiedades.getProperty("NOMBRE"));
             setDireccion(propiedades.getProperty("DIRECCION"));
@@ -105,37 +127,61 @@ public class ObtenerParametros{
             setDia(Boolean.parseBoolean(propiedades.getProperty("DIA")));
             setFecha(LocalDate.parse(propiedades.getProperty("FECHA"),formato));
             System.out.println(isActivo()+ " desde parametros");
+
             if(!activo){     
                 setTasa(Double.parseDouble(propiedades.getProperty("TASA")));
-            }
-            else{
+            } else {
                 tasaAutomatica();
             }
-            
-            
+
         }
         catch (FileNotFoundException e){
-            System.out.println(cadena);
-            JOptionPane.showMessageDialog(null,
-                                       "Error, archivo de prametros no existe");
+            System.out.println("Error: " + cadena);
+            JOptionPane.showMessageDialog(null, "Error, archivo de parámetros no existe");
             System.exit(1000);
         }
         catch (NumberFormatException e){
             System.out.println(e);
-            JOptionPane.showMessageDialog(null,
-                                "Error, parametro no numerico");
+            JOptionPane.showMessageDialog(null, "Error, parámetro no numérico");
             System.exit(1000);
         }
         catch (IOException e){
             System.out.println(e);
-            JOptionPane.showMessageDialog(null,
-                                "Error, archivo de prametros no se puede leer");
+            JOptionPane.showMessageDialog(null, "Error, archivo de parámetros no se puede leer");
             System.exit(1000);
         }
     }
 
-    public void guardar() throws FileNotFoundException, IOException{
-        propiedades.store(new FileOutputStream(cadena), "yo que se");
+    private void crearArchivoConfiguracion(File archivo) throws IOException {
+        Properties propsDefault = new Properties();
+
+        // Valores por defecto
+        propsDefault.setProperty("NOMBRE", "Mi Empresa");
+        propsDefault.setProperty("DIRECCION", "Mi Dirección");
+        propsDefault.setProperty("RIF", "J-000000000");
+        propsDefault.setProperty("GANANCIA", "30");
+        propsDefault.setProperty("IVA", "16");
+        propsDefault.setProperty("ACTIVO", "false");
+        propsDefault.setProperty("TASA", "1.0");
+        propsDefault.setProperty("FACTURA", "1");
+        propsDefault.setProperty("DIA", "true");
+        propsDefault.setProperty("FECHA", LocalDate.now().format(formato));
+
+        // Crear directorio si no existe
+        archivo.getParentFile().mkdirs();
+
+        try (FileOutputStream fos = new FileOutputStream(archivo)) {
+            propsDefault.store(fos, "Archivo de configuración generado automáticamente");
+        }
+
+        System.out.println("Archivo de configuración creado: " + archivo.getAbsolutePath());
+    }
+
+    public void guardar() throws FileNotFoundException, IOException {
+        // Siempre guardar en el filesystem, no en el JAR
+        File archivoGuardar = new File("Datos.txt");
+        propiedades.store(new FileOutputStream(archivoGuardar), "Configuración guardada");
+        System.out.println("Configuración guardada en: " + archivoGuardar.getAbsolutePath());
     }
 
     public String getNombre() {

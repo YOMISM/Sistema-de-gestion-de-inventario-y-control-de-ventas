@@ -70,4 +70,36 @@
     nbproject/build-impl.xml file. 
 
     -->
+        <description>Builds, tests, and runs the project Inventario.</description>
+        <import file="nbproject/build-impl.xml"/>
+
+        <!-- Sobrescribir el target -do-jar para incluir Datos.txt -->
+        <target name="-post-jar">
+            <echo message="Incluyendo archivos de configuración en el JAR..."/>
+            <jar destfile="${dist.jar}" update="true">
+                <fileset file="Datos.txt"/>
+            </jar>
+        </target>
+
+        <!-- Crear Datos.txt si no existe durante el build -->
+        <target name="-pre-compile">
+            <available file="Datos.txt" property="datos.txt.exists"/>
+            <antcall target="create-datos-txt"/>
+        </target>
+
+        <target name="create-datos-txt" unless="datos.txt.exists">
+            <echo message="Creando archivo Datos.txt con valores por defecto..."/>
+            <propertyfile file="Datos.txt">
+                <entry key="NOMBRE" value="Mi Empresa"/>
+                <entry key="DIRECCION" value="Mi Dirección"/>
+                <entry key="RIF" value="J-000000000"/>
+                <entry key="GANANCIA" value="30"/>
+                <entry key="IVA" value="16"/>
+                <entry key="ACTIVO" value="false"/>
+                <entry key="TASA" value="1.0"/>
+                <entry key="FACTURA" value="1"/>
+                <entry key="DIA" value="true"/>
+                <entry key="FECHA" value="${TODAY}"/>
+            </propertyfile>
+        </target>
 </project>

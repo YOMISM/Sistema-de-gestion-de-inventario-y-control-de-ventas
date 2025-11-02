@@ -83,6 +83,7 @@ public class productosPanel extends javax.swing.JPanel {
         BuscarBoton1 = new javax.swing.JButton();
         cantidadMinimaTexto = new javax.swing.JLabel();
         cantidadMinimaNumeroTexto = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
         productoTexto = new javax.swing.JTextField();
         precioTexto = new javax.swing.JTextField();
@@ -717,7 +718,9 @@ public class productosPanel extends javax.swing.JPanel {
                 .addContainerGap(10, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Agregar", jPanel2);
+        jScrollPane1.setViewportView(jPanel2);
+
+        jTabbedPane1.addTab("Agregar Productos", jScrollPane1);
 
         add(jTabbedPane1);
     }// </editor-fold>//GEN-END:initComponents
@@ -1402,6 +1405,7 @@ public void quitarTexto(Component componente){
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField precioBolivarTexto;
